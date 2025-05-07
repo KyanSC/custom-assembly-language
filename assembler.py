@@ -1,3 +1,5 @@
+import sys
+
 op_codes = {
     "add": "000000",
     "sub": "000000",
@@ -50,22 +52,6 @@ def assemble(line):
         rt = registers.get(ops[1], "00000") if len(ops) > 1 else "00000"
         rd = registers.get(ops[2], "00000") if len(ops) > 2 else "00000"
         return op_codes[instr] + rs + rt + rd + "00000" + func_codes[instr]
-    elif instr in ["addi", "beq", "bne", "threept"]:
-        rt, rs, imm = parts[1].replace(",", ""), parts[2].replace(",", ""), parts[3]
-        imm_bin = format(int(imm), '016b')
-        return op_codes[instr] + registers[rs] + registers[rt] + imm_bin
-    elif instr in ["print", "mfhi", "mflo"]:
-        rt = parts[1].replace(",", "")
-        return op_codes[instr] + "00000" + "00000" + registers[rt] + "00000" + func_codes[instr]
-    elif instr == "jump":
-        addr = format(int(parts[1]), '026b')
-        return op_codes[instr] + addr
-    elif instr == "replay":
-        _, n = parts[1].replace(",", ""), parts[2]
-        imm_bin = format(int(n), '016b')
-        return op_codes[instr] + "00000" + "00000" + imm_bin
-    elif instr == "buzzer":
-        return op_codes[instr] + "0" * 26
     return ""
 
 def interpret_file(filename):
@@ -76,4 +62,6 @@ def interpret_file(filename):
                 outfile.write(binary + "\n")
 
 if __name__ == "__main__":
-    interpret_file("output_basketball.asm")
+    program_number = sys.argv[1] if len(sys.argv) > 1 else "1"
+    input_filename = f"output_basketball{program_number}.asm"
+    interpret_file(input_filename)

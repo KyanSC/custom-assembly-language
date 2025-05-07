@@ -1,3 +1,5 @@
+import sys
+
 op_codes = {
     "000000": "R",
     "001000": "addi",
@@ -28,29 +30,15 @@ func_codes = {
 
 registers = {format(i, '05b'): f"r{i}" for i in range(16)}
 
-def disassemble_line(line):
-    opcode = line[0:6]
-    if opcode == "000000" or opcode == "011001":
-        rs, rt, rd, shamt, func = line[6:11], line[11:16], line[16:21], line[21:26], line[26:]
-        return f"{func_codes[func]} {registers[rd]}, {registers[rs]}, {registers[rt]}"
-    elif opcode == "000010":
-        addr = int(line[6:], 2)
-        return f"jump {addr}"
-    elif opcode == "011011":
-        return "buzzer"
-    else:
-        rs, rt, imm = line[6:11], line[11:16], line[16:]
-        instr = op_codes.get(opcode, "unknown")
-        return f"{instr} {registers[rt]}, {registers[rs]}, {int(imm, 2)}"
-
 def disassemble_file(filename):
     with open(filename, "r") as infile, open("disassembled.asm", "w") as outfile:
         for line in infile:
             line = line.strip()
             if line:
-                asm = disassemble_line(line)
+                asm = line  # Keep original line for debugging
                 outfile.write(asm + "\n")
 
-
 if __name__ == "__main__":
-    disassemble_file("program_output.bin")
+    program_number = sys.argv[1] if len(sys.argv) > 1 else "1"
+    input_filename = "program_output.bin"
+    disassemble_file(input_filename)
